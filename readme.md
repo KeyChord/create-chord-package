@@ -38,3 +38,10 @@ import buildMenuHandler from './@keychord/chords-menu/js/menu.js';
 ### `bin/`
 
 If a chord package has binaries, they must be located in a root `bin/` directory.
+
+## Chord files (.toml)
+
+A chord file must contain the top-level `config` and `chords` properties.
+
+If it defines the `chords.js` table, it initializes a new JavaScript module at the path of that chord file.
+

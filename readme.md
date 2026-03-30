@@ -15,9 +15,9 @@ bin/
 
 A chord package must have a `package.json` file with the following fields:
 
-- `name`: The name of the chord package.
+- `name`: The name of the chord package. Must be in the form `@<username>/<slug>`.
 
-> For local chord packages, if `package.json` is omitted, the chord package's name will instead be inferred from its folder name. Remote chord packages (such as those from a public Git repository) MUST contain a `package.json` file or Chord will refuse to load them.
+> For local chord packages, if `package.json` is omitted, the chord package's name will instead be inferred from the device name + its folder name. Remote chord packages (such as those from a public Git repository) MUST contain a `package.json` file or Chord will refuse to load them.
 
 ### `chords/`
 
@@ -56,6 +56,7 @@ A chord file typically contains the following top-level properties:
 - `name`
 - `handlers`
 - `chords`
+- `import`
 
 ### Handlers
 
@@ -71,6 +72,8 @@ args = ["WhatsApp"]
 cvi = { name = "Chat: Video Call", 'emit:menu' = ["Chat", "Video Call"] }
 ```
 
+In order to avoid conflicts, `emit` will first emit an event namespaced to the package name (`@user/pkg:<event-name>`), and if that isn't handled, then it will emit the non-namespaced event (`<event-name>`). This allows chord files that import other files to override their handlers.
+
 ### `chords`
 
 A chord definition may consist of a regex pattern:
@@ -80,29 +83,30 @@ A chord definition may consist of a regex pattern:
 '/l(\d+)' = { name = "Lungo: Minutes", shell = "open --background 'lungo:activate?minutes=$1'" }
 ```
 
-It may also "forward" to another file (useful for reusing definitions from other chord packages):
+A chord file may also import chords from another file (useful for reusing definitions from other chord packages):
 
 ```toml
 name = "Firefox"
 
-[chords.'(.*)']
+[[chords.import]]
 file = "@keychord/chords-chromium/chords/base.toml"
 ```
 
-When forwarding to another file with chords that emit events, you may also register a custom handler for those events that takes priority:
+When importing chords from another file that emit events, you must explicitly register a handler to handle those events:
 
 ```toml
 name = "Android Studio"
 
-[handlers.command]
+[handlers.'@keychord/chords-jetbrains/command']
 type = "js"
 file = "@keychord/chords-jetbrains/js/jetbrains.js"
 args = ["/Applications/Android Studio.app/Contents/MacOS/studio"]
 
-[chords.'(.*)']
+[[chords.IMPORT]]
 file = "@keychord/chords-jetbrains/chords/base.toml"
-'@command' = 'command'
 ```
+
+> Note that when importing from another file, only the chords are imported, not the handlers.
 
 ## Recommended Third-Party Packages
 

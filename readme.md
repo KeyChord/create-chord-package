@@ -48,6 +48,7 @@ import buildMenuHandler from './@keychord/chords-menu/js/menu.js';
 
 If a chord package has binaries, they must be located in a root `bin/` directory.
 
+<<<<<<< HEAD
 ## Chord files
 
 A chord file typically contains the following top-level properties:

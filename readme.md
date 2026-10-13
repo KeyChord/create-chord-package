@@ -48,7 +48,6 @@ import buildMenuHandler from './@keychord/chords-menu/js/menu.js';
 
 If a chord package has binaries, they must be located in a root `bin/` directory.
 
-<<<<<<< HEAD
 ## Chord files
 
 A chord file typically contains the following top-level properties:
@@ -60,19 +59,30 @@ A chord file typically contains the following top-level properties:
 
 ### Handlers
 
-A chord file may define zero or more handlers for custom events emitted by chords (through the `emit:<event-name>` property on chord definitions.
+A chord file may define zero or more handlers for custom events emitted by chords through the `@input:<event-name>` property on chord definitions. Its value is an array of arguments passed to the handler, and may contain regex captures such as `$1`.
 
 ```toml
-[handlers.menu]
-type = "js"
+[on.menu]
 file = "@keychord/chords-menu/js/menu.js"
 args = ["WhatsApp"]
 
 [chords]
-cvi = { name = "Chat: Video Call", 'emit:menu' = ["Chat", "Video Call"] }
+cvi = { name = "Chat: Video Call", '@input:menu' = ["Chat", "Video Call"] }
 ```
 
-In order to avoid conflicts, `emit` will first emit an event namespaced to the package name (`@user/pkg:<event-name>`), and if that isn't handled, then it will emit the non-namespaced event (`<event-name>`). This allows chord files that import other files to override their handlers.
+In order to avoid conflicts, `@input:<event-name>` will first emit an event namespaced to the package name (`@user/pkg:<event-name>`), and if that isn't handled, then it will emit the non-namespaced event (`<event-name>`). This allows chord files that import other files to override their handlers.
+
+Use `@init:<event-name>` for initialization when a chord first matches, and `@keydown`, `@keypress`, or `@keyup` for live keyboard callbacks. Initialization resets when that chord stops matching. All five triggers can assign their handler's return value with `=<identifier>`:
+
+```toml
+[chords.'^j,(.*)$']
+name = "Live clicks"
+'@init:prepare=context' = []
+'@keydown:update=latest' = ['$context', '$1']
+'@keyup:released' = ['$latest']
+```
+
+Declare `prepare`, `update`, and `released` under `[on]` as usual. Return values persist for that chord's current matching interval, and Promise results are awaited before later callbacks. Handlers receive Web KeyboardEvent fields through `this.event`, so they can filter keys with `this.event.key === "Backspace"`. Chord also delivers `@keypress` for non-character keys. See [the full event contract](https://github.com/KeyChord/Chord/blob/dev/scripting.md#chord-events-and-persistent-return-values).
 
 ### `chords`
 
@@ -83,30 +93,28 @@ A chord definition may consist of a regex pattern:
 '/l(\d+)' = { name = "Lungo: Minutes", shell = "open --background 'lungo:activate?minutes=$1'" }
 ```
 
-A chord file may also import chords from another file (useful for reusing definitions from other chord packages):
+A chord file may also import chords from another file, which is useful for reusing definitions from other chord packages:
 
 ```toml
 name = "Firefox"
 
-[[chords.import]]
+[[import]]
 file = "@keychord/chords-chromium/chords/base.toml"
 ```
 
-When importing chords from another file that emit events, you must explicitly register a handler to handle those events:
+Note that importing other chord files also imports their handlers as well. If you need to override their handlers, you can explicitly register a handler for events from that chord file by scoping the event name with the package name:
 
 ```toml
 name = "Android Studio"
 
-[handlers.'@keychord/chords-jetbrains/command']
-type = "js"
+[on.command]
 file = "@keychord/chords-jetbrains/js/jetbrains.js"
 args = ["/Applications/Android Studio.app/Contents/MacOS/studio"]
 
-[[chords.IMPORT]]
+[[import]]
 file = "@keychord/chords-jetbrains/chords/base.toml"
+':command' = command
 ```
-
-> Note that when importing from another file, only the chords are imported, not the handlers.
 
 ## Recommended Third-Party Packages
 

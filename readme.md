@@ -78,7 +78,7 @@ Chords that only press a shortcut (`shortcut = "cmd+n"`) or run a command (`shel
 
 ### Sharing a package
 
-Push the package to GitHub with its built `js/` folder committed: Chord clones the repo but doesn't install or build anything. Others can then add it with **Settings → Chords → Chord Repos → Add Repo** and `owner/name`. A repo that contains several package folders named `chords-*`, like [KeyChord/chords](https://github.com/KeyChord/chords), is added with **Chord Monorepos → Add Monorepo** instead, and loads nothing until you tick packages under **Packages to use**.
+Push the package to GitHub with its built `js/` folder committed: Chord clones the repo but doesn't install or build anything. Others can then add it with **Settings → Chords → Chord Repos → Add Repo** and `owner/name`. Add the `chordpack` topic to the repo so people can find it: Chord's **Settings → Browse** links to a GitHub search for that topic. A repo that contains several package folders named `chords-*`, like [KeyChord/chords](https://github.com/KeyChord/chords), is added with **Chord Monorepos → Add Monorepo** instead, and loads nothing until you tick packages under **Packages to use**.
 
 If two loaded packages have the same name, a local folder wins over a repo, so a local checkout of a published package replaces it while you work on it.
 

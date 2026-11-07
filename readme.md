@@ -7,7 +7,7 @@ How to create a chord package for [Chord](https://github.com/KeyChord/Chord) (mu
 
 ## Quick start
 
-1. Install Chord: download `Chord-aarch64.dmg` from the [latest release](https://github.com/KeyChord/Chord/releases/latest) (Apple Silicon only, signed and notarized), drag it into `Applications`, launch it, and grant it Accessibility access when asked.
+1. Install Chord: download `Chord-aarch64.dmg` (Apple silicon) or `Chord-x86_64.dmg` (Intel) from the [latest release](https://github.com/KeyChord/Chord/releases/latest) (signed and notarized), drag it into `Applications`, launch it, and grant it Accessibility access when asked.
 
 2. Create a folder with these files:
 
